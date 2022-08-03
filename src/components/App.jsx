@@ -1,78 +1,51 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import Container from './Container/Container';
 import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
 import Section from './Section/Section';
 import Statistics from './Statistics/Statistics';
 import Notification from './Notification/Notification';
 
-class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+export default function App() {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+  const handleGood = () => {
+    setGood(state => state + 1);
+  };
+  const handleNeutral = () => {
+    setNeutral(state => state + 1);
+  };
+  const handleBad = () => {
+    setBad(state => state + 1);
   };
 
-  handleGoodFeedback = () => {
-    this.setState(prevState => {
-      return {
-        good: prevState.good + 1,
-      };
-    });
-  };
-  handleNeutralFeedback = () => {
-    this.setState(prevState => {
-      return {
-        neutral: prevState.neutral + 1,
-      };
-    });
-  };
-  handleBadFeedback = () => {
-    this.setState(prevState => {
-      return {
-        bad: prevState.bad + 1,
-      };
-    });
-  };
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    const total = good + neutral + bad;
-    return total;
-  };
+  const total = () => good + neutral + bad;
 
-  countPositiveFeedbackPercentage = () => {
-    const { good, neutral, bad } = this.state;
-    const positiv = (good * 100) / (good + neutral + bad);
-    return Math.round(positiv);
+  const positive = () => {
+    return Math.round((good * 100) / (good + neutral + bad));
   };
-
-  render() {
-    const { good, neutral, bad } = this.state;
-    const total = this.countTotalFeedback();
-    const positive = this.countPositiveFeedbackPercentage();
-    return (
-      <Container>
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            goodFeedback={this.handleGoodFeedback}
-            badFeedback={this.handleBadFeedback}
-            neutralFeedback={this.handleNeutralFeedback}
+  return (
+    <Container>
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          goodFeedback={handleGood}
+          badFeedback={handleBad}
+          neutralFeedback={handleNeutral}
+        />
+      </Section>
+      <Section title="Statistics">
+        {total() === 0 ? (
+          <Notification message="There is no feedback"></Notification>
+        ) : (
+          <Statistics
+            onGood={good}
+            onBad={bad}
+            onNeutral={neutral}
+            total={total()}
+            positiv={positive()}
           />
-        </Section>
-        <Section title="Statistics">
-          {total === 0 ? (
-            <Notification message="There is no feedback"></Notification>
-          ) : (
-            <Statistics
-              onGood={good}
-              onBad={bad}
-              onNeutral={neutral}
-              total={total}
-              positiv={positive}
-            />
-          )}
-        </Section>
-      </Container>
-    );
-  }
+        )}
+      </Section>
+    </Container>
+  );
 }
-export default App;
